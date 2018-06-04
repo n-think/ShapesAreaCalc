@@ -25,6 +25,7 @@ namespace AreaCalc
 
                 // Смотрим на _isInitialized чтобы не проверять значение пока не присвоили все стороны в конструкторе
                 // (поидее можно сразу присваивать приватным полям но тогда на отриц не проверится, мб проверять в конструкторе на отриц, хз как лучше)
+                // мб вообще сделать стороны readonly чтобы не менялись
                 if (_isInitialized && !Exists(value))
                     throw new ArgumentException("Triangle with this value does not exist", nameof(value));
                 _sideA = value;
@@ -67,13 +68,13 @@ namespace AreaCalc
 
         public Triangle(double sideA, double sideB, double sideC)
         {
-            //проверяем существует ли такой треугольник
-            if (!Exists(sideA, sideB, sideC))
-                throw new ArgumentException("Triangle with these values does not exist");
-
             SideA = sideA;
             SideB = sideB;
             SideC = sideC;
+
+            //проверяем существует ли такой треугольник
+            if (!Exists())
+                throw new ArgumentException("Triangle with these values does not exist");
 
             //Устанавливаем флаг что треугольник инициализирован
             _isInitialized = true;
@@ -89,36 +90,29 @@ namespace AreaCalc
         /// <param name="sideValue">Значение стороны</param>
         /// <param name="side">Сторона</param>
         /// <returns></returns>
-        private bool Exists(double sideValue, [CallerMemberName] string side = "")
+        private bool Exists(double sideValue = 0, [CallerMemberName] string side = "")
         {
-            if (side == "SideA")
+            //не нравится этот метод 
+
+            //Проверяем будет ли существовать такой треугольник перед тем как присвоить свойству стороны значение
+            if (side == "SideA" && sideValue > 0)
                 return sideValue + SideB > SideC & sideValue + SideC > SideB & SideB + SideC > sideValue;
             else
-            if (side == "SideB")
+            if (side == "SideB" && sideValue > 0)
                 return SideA + sideValue > SideC & SideA + SideC > sideValue & sideValue + SideC > SideA;
             else
-            if (side == "SideC")
+            if (side == "SideC" && sideValue > 0)
                 return SideA + SideB > sideValue & SideA + sideValue > SideB & SideB + sideValue > SideA;
+
+            //Проверяем существует ли треугольник с такими сторонами 
             else
-                return false;
+                return SideA + SideB > SideC & SideA + SideC > SideB & SideB + SideC > SideA;
         }
 
         /// <summary>
-        /// Проверяет существует ли треугольник с такими сторонами
+        /// Проверяет прямоугольный ли треугольник
         /// </summary>
-        /// <param name="sideA"></param>
-        /// <param name="sideB"></param>
-        /// <param name="sideC"></param>
         /// <returns></returns>
-        private bool Exists(double sideA, double sideB, double sideC)
-        {
-            return sideA + sideB > sideC & sideA + sideC > sideB & sideB + sideC > sideA;
-        }
-
-       /// <summary>
-       /// Проверяет прямоугольный ли треугольник
-       /// </summary>
-       /// <returns></returns>
         private bool CheckIfRight()
         {
             var temp = new[] { SideA, SideB, SideC };
