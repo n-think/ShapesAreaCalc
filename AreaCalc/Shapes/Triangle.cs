@@ -9,8 +9,6 @@ namespace AreaCalc
 {
     public class Triangle : IShape
     {
-        #region properties and fields
-
         private double _sideA;
         private double _sideB;
         private double _sideC;
@@ -21,13 +19,10 @@ namespace AreaCalc
             set
             {
                 if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(value), "Triangle's side must be positive");
+                    throw new ArgumentException("Triangle's side must be positive", nameof(value));
 
                 _sideA = value;
 
-                // Смотрим на _isInitialized чтобы не проверять значение пока не присвоили все стороны в конструкторе
-                // (поидее можно сразу присваивать приватным полям но тогда на отриц не проверится, мб проверять в конструкторе на отриц, хз как лучше)
-                // мб вообще сделать стороны readonly чтобы не менялись
                 if (_isInitialized && !Exists())
                     throw new ArgumentException("Triangle with this side does not exist", nameof(value));
             }
@@ -39,7 +34,7 @@ namespace AreaCalc
             set
             {
                 if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(value), "Triangle's side must be positive");
+                    throw new ArgumentException("Triangle's side must be positive", nameof(value));
 
                 _sideB = value;
 
@@ -54,7 +49,7 @@ namespace AreaCalc
             set
             {
                 if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(value), "Triangle's side must be positive");
+                    throw new ArgumentException("Triangle's side must be positive", nameof(value));
 
                 _sideC = value;
 
@@ -63,13 +58,32 @@ namespace AreaCalc
             }
         }
 
-        public bool IsRight => CheckIfRight();
+        /// <summary>
+        /// Возвращает прямоугольный ли треугольник
+        /// </summary>
+        public bool IsRight
+        {
+            get
+            {
+                var temp = new[] { SideA, SideB, SideC };
+                Array.Sort(temp);
+                return Math.Round(temp[2] * temp[2], 5) == Math.Round(temp[0] * temp[0] + temp[1] * temp[1], 5);
+            }
+        }
+
+        /// <summary>
+        /// Получаем площадь
+        /// </summary>
+        public double GetArea
+        {
+            get
+            {
+                var p = (SideA + SideB + SideC) / 2;
+                return Math.Round(Math.Sqrt(p * (p - SideA) * (p - SideB) * (p - SideC)), 5);
+            }
+        }
 
         private readonly bool _isInitialized;
-
-        #endregion
-
-        #region ctor
 
         public Triangle(double sideA, double sideB, double sideC)
         {
@@ -85,10 +99,6 @@ namespace AreaCalc
             _isInitialized = true;
         }
 
-        #endregion
-
-        #region methods 
-
         /// <summary>
         /// Проверяем существует ли треугольник с такими сторонами 
         /// </summary> 
@@ -98,27 +108,5 @@ namespace AreaCalc
             return SideA + SideB > SideC & SideA + SideC > SideB & SideB + SideC > SideA;
         }
 
-        /// <summary>
-        /// Проверяет прямоугольный ли треугольник
-        /// </summary>
-        /// <returns></returns>
-        private bool CheckIfRight()
-        {
-            var temp = new[] { SideA, SideB, SideC };
-            Array.Sort(temp);
-            return Math.Round(temp[2] * temp[2], 5) == Math.Round(temp[0] * temp[0] + temp[1] * temp[1], 5);
-        }
-
-        /// <summary>
-        /// Получает площадь треугольника
-        /// </summary>
-        /// <returns></returns>
-        public double GetArea()
-        {
-            var p = (SideA + SideB + SideC) / 2;
-            return Math.Sqrt(p * (p - SideA) * (p - SideB) * (p - SideC));
-        }
-
-        #endregion
     }
 }

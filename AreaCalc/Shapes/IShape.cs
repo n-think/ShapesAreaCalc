@@ -8,6 +8,6 @@ namespace AreaCalc
 {
     public interface IShape
     {
-        double GetArea();
+        double GetArea{ get; }
     }
 }

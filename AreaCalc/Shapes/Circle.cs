@@ -8,19 +8,28 @@ namespace AreaCalc
 {
     public class Circle : IShape
     {
+        private double _radius;
+
         /// <summary>
         /// Радиус круга
         /// </summary>
-        private double _radius;
         public double Radius
         {
             get => _radius;
             set
             {
                 if (value < 0)
-                    throw new ArgumentOutOfRangeException("Radius can't be negative", nameof(value));
+                    throw new ArgumentException("Radius can't be negative", nameof(value));
                 _radius = value;
             }
+        }
+
+        /// <summary>
+        /// Получаем площадь круга
+        /// </summary>
+        public double GetArea
+        {
+            get { return Math.Round(Math.PI * Radius * Radius, 5); }
         }
 
         /// <summary>
@@ -30,15 +39,6 @@ namespace AreaCalc
         public Circle(double r)
         {
             Radius = r;
-        }
-
-        /// <summary>
-        /// Получаем площадь круга
-        /// </summary>
-        /// <returns></returns>
-        public double GetArea()
-        {
-            return Math.PI * Radius * Radius;
         }
     }
 }
