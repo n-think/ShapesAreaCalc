@@ -21,14 +21,15 @@ namespace AreaCalc
             set
             {
                 if (value < 0)
-                    throw new ArgumentOutOfRangeException("Triangle's side must be positive", nameof(value));
+                    throw new ArgumentOutOfRangeException(nameof(value), "Triangle's side must be positive");
+
+                _sideA = value;
 
                 // Смотрим на _isInitialized чтобы не проверять значение пока не присвоили все стороны в конструкторе
                 // (поидее можно сразу присваивать приватным полям но тогда на отриц не проверится, мб проверять в конструкторе на отриц, хз как лучше)
                 // мб вообще сделать стороны readonly чтобы не менялись
-                if (_isInitialized && !Exists(value))
-                    throw new ArgumentException("Triangle with this value does not exist", nameof(value));
-                _sideA = value;
+                if (_isInitialized && !Exists())
+                    throw new ArgumentException("Triangle with this side does not exist", nameof(value));
             }
         }
 
@@ -38,10 +39,12 @@ namespace AreaCalc
             set
             {
                 if (value < 0)
-                    throw new ArgumentOutOfRangeException("Triangle's side must be positive", nameof(value));
-                if (_isInitialized && !Exists(value))
-                    throw new ArgumentException("Triangle with this value does not exist", nameof(value));
+                    throw new ArgumentOutOfRangeException(nameof(value), "Triangle's side must be positive");
+
                 _sideB = value;
+
+                if (_isInitialized && !Exists())
+                    throw new ArgumentException("Triangle with this side does not exist", nameof(value));
             }
         }
 
@@ -51,10 +54,12 @@ namespace AreaCalc
             set
             {
                 if (value < 0)
-                    throw new ArgumentOutOfRangeException("Triangle's side must be positive", nameof(value));
-                if (_isInitialized && !Exists(value))
-                    throw new ArgumentException("Triangle with this value does not exist", nameof(value));
+                    throw new ArgumentOutOfRangeException(nameof(value), "Triangle's side must be positive");
+
                 _sideC = value;
+
+                if (_isInitialized && !Exists())
+                    throw new ArgumentException("Triangle with this side does not exist", nameof(value));
             }
         }
 
@@ -85,28 +90,12 @@ namespace AreaCalc
         #region methods 
 
         /// <summary>
-        /// Проверяет будет ли существовать треугольник перед тем как присвоить свойству стороны значение
-        /// </summary>
-        /// <param name="sideValue">Значение стороны</param>
-        /// <param name="side">Сторона</param>
+        /// Проверяем существует ли треугольник с такими сторонами 
+        /// </summary> 
         /// <returns></returns>
-        private bool Exists(double sideValue = 0, [CallerMemberName] string side = "")
+        private bool Exists()
         {
-            //не нравится этот метод 
-
-            //Проверяем будет ли существовать такой треугольник перед тем как присвоить свойству стороны значение
-            if (side == "SideA" && sideValue > 0)
-                return sideValue + SideB > SideC & sideValue + SideC > SideB & SideB + SideC > sideValue;
-            else
-            if (side == "SideB" && sideValue > 0)
-                return SideA + sideValue > SideC & SideA + SideC > sideValue & sideValue + SideC > SideA;
-            else
-            if (side == "SideC" && sideValue > 0)
-                return SideA + SideB > sideValue & SideA + sideValue > SideB & SideB + sideValue > SideA;
-
-            //Проверяем существует ли треугольник с такими сторонами 
-            else
-                return SideA + SideB > SideC & SideA + SideC > SideB & SideB + SideC > SideA;
+            return SideA + SideB > SideC & SideA + SideC > SideB & SideB + SideC > SideA;
         }
 
         /// <summary>
